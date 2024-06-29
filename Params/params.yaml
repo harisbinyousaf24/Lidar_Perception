@@ -9,9 +9,9 @@ Extractor:
 Preprocessor:
   # Specify drive distance threshold in meters, if drive distance crosses
   # this threshold it will auto trigger advanced preprocessing if set False
-  drive_distance_thresh: 280
+  drive_distance_thresh: 230
   basic_preprocessing: True
-  advanced_preprocessing: True
+  advanced_preprocessing: False
   # Basic preprocessing parameters
   road_value_z: -2.9
   # Advanced preprocessing parameters

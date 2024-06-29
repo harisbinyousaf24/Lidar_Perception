@@ -54,7 +54,7 @@ if __name__ == '__main__':
     logging.info('Estimating Drive Distance...')
     dstComputer = DistanceComputer(bag_file)
     distance = dstComputer.compute_distance()
-    logging.info(f"GPS Estimated Drive distance is {distance} meters.")
+    print(f"\033[93mTotal GPS estimated drive distance is {distance} meters.\033[0m")
     elapsed_time = time.time() - start_time
     logging.info(f'DistanceComputer module took {elapsed_time:.2f} seconds.\n')
 

@@ -30,6 +30,9 @@ class Preprocessor:
             self.road_value_z = params['Preprocessor']['road_value_z']
         if not self.advanced_preprocessing:
             if self.distance >= self.distance_threshold:
+                print(
+                    f"\033[93mDrive distance [{self.distance} meters] is greater than threshold distance [{self.distance_threshold} meters]."
+                    f" Triggering Advanced Preprocessing!\033[0m")
                 self.advanced_preprocessing = True
         if self.advanced_preprocessing:
             self.SOR = [params['Preprocessor']['k_nbs'], params['Preprocessor']['z_thresh']]
