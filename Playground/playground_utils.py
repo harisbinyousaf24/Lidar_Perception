@@ -1,5 +1,5 @@
 import open3d as o3d
-from Scripts.Utils.preprocessor_utils import PreprocessorUtils
+from Utils.preprocessor_utils import PreprocessorUtils
 
 
 class PlaygroundUtils:

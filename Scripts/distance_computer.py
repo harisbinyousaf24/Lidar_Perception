@@ -8,7 +8,7 @@ class DistanceComputer:
     def __init__(self, bag_path):
         self.bag_file = bag_path
 
-        with open('../Params/params.yaml', 'r') as parameters:
+        with open('Params/params.yaml', 'r') as parameters:
             try:
                 params = yaml.safe_load(parameters)
             except yaml.YAMLError as exc:

@@ -20,4 +20,5 @@ TrajectoryTransformer:
 MapGenerator:
   map: 'maps'
   map_file: 'maps/map.ply'
+  ground_map_file: 'maps/ground_map.ply'
   colored_map_file: "maps/colored_map.ply"

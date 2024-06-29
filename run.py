@@ -3,12 +3,12 @@ import coloredlogs
 import yaml
 import logging
 import time
-from distance_computer import DistanceComputer
-from trajectory_transformer import TrajectoryTransformer
-from lidar_odometry import RunKissICP
-from extractor import Extractor
-from preprocessor import Preprocessor
-from map_generator import MapGenerator
+from Scripts.distance_computer import DistanceComputer
+from Scripts.trajectory_transformer import TrajectoryTransformer
+from Scripts.lidar_odometry import RunKissICP
+from Scripts.extractor import Extractor
+from Scripts.preprocessor import Preprocessor
+from Scripts.map_generator import MapGenerator
 
 
 def setup_logging():
@@ -32,7 +32,7 @@ def setup_logging():
 if __name__ == '__main__':
     logging = setup_logging()
 
-    with open('../Config/external_settings.yaml', 'r') as external_settings:
+    with open('Config/external_settings.yaml', 'r') as external_settings:
         try:
             ext_setts = yaml.safe_load(external_settings)
         except yaml.YAMLError as exc:

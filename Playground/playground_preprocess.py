@@ -1,4 +1,4 @@
-from Scripts.Utils.preprocessor_utils import PreprocessorUtils
+from Utils.preprocessor_utils import PreprocessorUtils
 from playground_utils import PlaygroundUtils
 
 if __name__ == '__main__':

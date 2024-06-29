@@ -9,13 +9,13 @@ class Preprocessor:
         self.main_dir = output_dir
         self.distance = distance
 
-        with open('../Params/params.yaml', 'r') as parameters:
+        with open('Params/params.yaml', 'r') as parameters:
             try:
                 params = yaml.safe_load(parameters)
             except yaml.YAMLError as exc:
                 print(f"Error reading YAML file: {exc}")
 
-        with open('../Config/settings.yaml', 'r') as settings:
+        with open('Config/settings.yaml', 'r') as settings:
             try:
                 setts = yaml.safe_load(settings)
             except yaml.YAMLError as exc:
