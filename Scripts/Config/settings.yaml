@@ -1,0 +1,18 @@
+Extractor:
+  data_dir: 'data'
+  frames_dir: 'data/frames'
+  gnss_file: 'data/gnss.json'
+
+Preprocessor:
+  preprocessed: 'preprocessed'
+  frames_dir: 'preprocessed/frames'
+
+LidarOdometry:
+  odometry: 'odometry'
+  latest_dir: 'odometry/results/latest'
+
+TrajectoryTransformer:
+  transformed_trajectory: 'trajectory_transformed'
+  org_plot_file: 'trajectory_transformed/lidar_gps_raw.html'
+  tf_plot_file: 'trajectory_transformed/lidar_gps_tf.html'
+  tf_poses_file: 'trajectory_transformed/tf_poses.npy'

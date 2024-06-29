@@ -1,0 +1,29 @@
+Extractor:
+  # Mention file format to save lidar frames (for now do not set pcd)
+  save_as: 'ply'
+  # Topics
+  gps_topic: '/gnss'
+  lidar_topic: '/rslidar_points'
+
+Preprocessor:
+  basic_preprocessing: True
+  advanced_preprocessing: False
+  # Basic preprocessing parameters
+  road_value_z: -2.9
+  # Advanced preprocessing parameters
+  k_nbs: 10
+  z_thresh: 3
+  z_filter: [-2.9, 8]
+
+LidarOdometry:
+  max_range: 100
+  deskew: True
+
+TrajectoryTransformer:
+  frames_index: -1
+  offset: 0
+  # Use heading from 'gps' or 'manual'
+  use_heading_from: 'gps'
+  # Set manual heading in degrees if above parameter is 'manual'
+  manual_heading: 0
+
