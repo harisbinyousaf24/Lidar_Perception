@@ -42,23 +42,21 @@ class TrajectoryTransformer:
             if file.endswith('.npy'):
                 self.poses_file = os.path.join(self.latest_dir, file)
 
-        # Variables
-        self.gps_data = None
-        self.poses = None
-        self.translations = None
-        self.r_matrix = None
+        self.gps_data = TrajectoryTransformerUtils.read_gps(self.gnss_file)
+        self.local_gps, self.offset_list = TrajectoryTransformerUtils.convert_global_to_local(self.gps_data)
+        self.poses, self.translations = TrajectoryTransformerUtils.load_states(self.poses_file)
 
     def decide_rotation(self):
-        self.gps_data = TrajectoryTransformerUtils.read_gps(self.gnss_file)
-        self.poses, self.translations = TrajectoryTransformerUtils.load_states(self.poses_file)
         if self.use_heading_from == 'gps':
-            angle = TrajectoryTransformerUtils.compute_rotation_based_on_gps(self.gps_data,
+            angle = TrajectoryTransformerUtils.compute_rotation_based_on_gps(self.local_gps,
                                                                              self.translations,
                                                                              self.frames_index,
                                                                              self.offset)
+            print(f"Using heading from GPS: {angle} degrees")
             r_matrix = TrajectoryTransformerUtils.rot_matrix(angle)
             return r_matrix
         if self.use_heading_from == 'manual':
+            print(f"Using heading manually {self.manual_heading} degrees")
             r_matrix = TrajectoryTransformerUtils.rot_matrix(self.manual_heading)
             return r_matrix
 
@@ -68,7 +66,7 @@ class TrajectoryTransformer:
         r_matrix = self.decide_rotation()
         for pose in self.poses:
             rotated_pose = np.dot(r_matrix, pose)
-            translation = pose[:3, 3]
+            translation = rotated_pose[:3, 3]
             transformed_poses.append(rotated_pose)
             transformed_translations.append(translation)
 

@@ -59,7 +59,10 @@ class TrajectoryTransformerUtils:
 
         global_mat = []
         for x, y in local_data:
-            lat, lon = utm.to_latlon(utm_offset[0], utm_offset[1], zone_num, zone_letter)
+            # Add the local offset to the UTM offset
+            ux = utm_offset[0] + x
+            uy = utm_offset[1] + y
+            lat, lon = utm.to_latlon(ux, uy, zone_num, zone_letter)
             latlon_arr = np.array([lat, lon])
             global_mat.append(latlon_arr)
 
@@ -94,9 +97,7 @@ class TrajectoryTransformerUtils:
         angle_radians = sign * angle_radians
         angle_degrees = np.degrees(angle_radians)
         angle_degrees = -1 * angle_degrees + add_offset
-
         return angle_degrees
-
 
     @staticmethod
     def mapbox_trajectories(traj: list, filename1: str):
