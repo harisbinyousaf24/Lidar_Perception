@@ -4,8 +4,9 @@ import yaml
 
 
 class RunKissICP:
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, preprocessor):
         self.main_dir = output_dir
+        self.preprocessor_flag = preprocessor
 
         with open('../Params/params.yaml', 'r') as parameters:
             try:
@@ -24,7 +25,10 @@ class RunKissICP:
         self.deskew = params['LidarOdometry']['deskew']
 
         # Load input paths
-        self.preprocessed_frames = os.path.join(self.main_dir, setts['Preprocessor']['frames_dir'])
+        if self.preprocessor_flag:
+            self.frames_dir = os.path.join(self.main_dir, setts['Preprocessor']['frames_dir'])
+        else:
+            self.frames_dir = os.path.join(self.main_dir, setts['Extractor']['frames_dir'])
 
         # Load output paths
         self.odometry = setts['LidarOdometry']['odometry']
@@ -33,7 +37,7 @@ class RunKissICP:
 
     def run(self):
         cwd = os.getcwd()
-        command = ["kiss_icp_pipeline", self.preprocessed_frames,
+        command = ["kiss_icp_pipeline", self.frames_dir,
                    "--max_range", self.max_range]
         if self.deskew:
             command.append("--deskew")

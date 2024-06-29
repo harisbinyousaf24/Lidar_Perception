@@ -7,6 +7,7 @@ from trajectory_transformer import TrajectoryTransformer
 from lidar_odometry import RunKissICP
 from extractor import Extractor
 from preprocessor import Preprocessor
+from map_generator import MapGenerator
 
 
 def setup_logging():
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     run_preprocessor = ext_setts['run_preprocessor']
     run_kissICP = ext_setts['run_kissICP']
     run_trajectoryTransformer = ext_setts['run_trajectoryTransformer']
+    run_mapGenerator = ext_setts['run_mapGenerator']
 
     if run_dataExtractor:
         start_time = time.time()
@@ -64,7 +66,7 @@ if __name__ == '__main__':
     if run_kissICP:
         start_time = time.time()
         logging.info('Running RunKissICP module...')
-        kissicp = RunKissICP(output_dir)
+        kissicp = RunKissICP(output_dir, run_preprocessor)
         kissicp.run()
         elapsed_time = time.time() - start_time
         logging.info(f'RunKissICP module took {elapsed_time:.2f} seconds.\n')
@@ -75,3 +77,10 @@ if __name__ == '__main__':
         trajectoryTransformer.run()
         elapsed_time = time.time() - start_time
         logging.info(f'TrajectoryTransformer module took {elapsed_time:.2f} seconds.\n')
+    if run_mapGenerator:
+        start_time = time.time()
+        logging.info('Running MapGenerator module...')
+        mapGen = MapGenerator(output_dir, run_preprocessor)
+        mapGen.run()
+        elapsed_time = time.time() - start_time
+        logging.info(f'MapGenerator module took {elapsed_time:.2f} seconds.\n')

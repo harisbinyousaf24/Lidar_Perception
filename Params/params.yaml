@@ -25,5 +25,7 @@ TrajectoryTransformer:
   # Use heading from 'gps' or 'manual'
   use_heading_from: 'gps'
   # Set manual heading in degrees if above parameter is 'manual'
-  manual_heading: 0
+  manual_heading: 5
 
+MapGenerator:
+  colored_map: True

@@ -1,7 +1,8 @@
 bag_file: '/home/ty/Downloads/AAI/Bags/hamburg.bag'
 output_dir: '/home/ty/Downloads/AAI/Lane_Marking_Execution/hamburg'
 
-run_dataExtractor: False
-run_preprocessor: False
-run_kissICP: False
+run_dataExtractor: True
+run_preprocessor: True
+run_kissICP: True
 run_trajectoryTransformer: True
+run_mapGenerator: True

@@ -16,3 +16,8 @@ TrajectoryTransformer:
   org_plot_file: 'trajectory_transformed/lidar_gps_raw.html'
   tf_plot_file: 'trajectory_transformed/lidar_gps_tf.html'
   tf_poses_file: 'trajectory_transformed/tf_poses.npy'
+
+MapGenerator:
+  map: 'maps'
+  map_file: 'maps/map.ply'
+  colored_map_file: "maps/colored_map.ply"
