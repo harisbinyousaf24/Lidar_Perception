@@ -3,6 +3,7 @@ import coloredlogs
 import yaml
 import logging
 import time
+from distance_computer import DistanceComputer
 from trajectory_transformer import TrajectoryTransformer
 from lidar_odometry import RunKissICP
 from extractor import Extractor
@@ -49,6 +50,14 @@ if __name__ == '__main__':
     run_trajectoryTransformer = ext_setts['run_trajectoryTransformer']
     run_mapGenerator = ext_setts['run_mapGenerator']
 
+    start_time = time.time()
+    logging.info('Estimating Drive Distance...')
+    dstComputer = DistanceComputer(bag_file)
+    distance = dstComputer.compute_distance()
+    logging.info(f"GPS Estimated Drive distance is {distance} meters.")
+    elapsed_time = time.time() - start_time
+    logging.info(f'DistanceComputer module took {elapsed_time:.2f} seconds.\n')
+
     if run_dataExtractor:
         start_time = time.time()
         logging.info('Running Extractor module...')
@@ -59,7 +68,7 @@ if __name__ == '__main__':
     if run_preprocessor:
         start_time = time.time()
         logging.info('Running Preprocessor module...')
-        preProcessor = Preprocessor(output_dir)
+        preProcessor = Preprocessor(output_dir, distance)
         preProcessor.run()
         elapsed_time = time.time() - start_time
         logging.info(f'Preprocessor module took {elapsed_time:.2f} seconds.\n')

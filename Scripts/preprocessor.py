@@ -5,8 +5,9 @@ from tqdm import tqdm
 
 
 class Preprocessor:
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, distance):
         self.main_dir = output_dir
+        self.distance = distance
 
         with open('../Params/params.yaml', 'r') as parameters:
             try:
@@ -21,10 +22,15 @@ class Preprocessor:
                 print(f"Error reading YAML file: {exc}")
 
         # Load parameters
+        self.distance_threshold = params['Preprocessor']['drive_distance_thresh']
         self.basic_preprocessing = params['Preprocessor']['basic_preprocessing']
         self.advanced_preprocessing = params['Preprocessor']['advanced_preprocessing']
+
         if self.basic_preprocessing:
             self.road_value_z = params['Preprocessor']['road_value_z']
+        if not self.advanced_preprocessing:
+            if self.distance >= self.distance_threshold:
+                self.advanced_preprocessing = True
         if self.advanced_preprocessing:
             self.SOR = [params['Preprocessor']['k_nbs'], params['Preprocessor']['z_thresh']]
             self.z_filter = params['Preprocessor']['z_filter']

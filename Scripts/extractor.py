@@ -29,8 +29,8 @@ class Extractor:
 
         # Load parameters
         self.save_as = params['Extractor']['save_as']
-        self.gps_topic = params['Extractor']['gps_topic']
-        self.lidar_topic = params['Extractor']['lidar_topic']
+        self.gps_topic = params['Topics']['gps_topic']
+        self.lidar_topic = params['Topics']['lidar_topic']
         self.topics_list = [self.gps_topic, self.lidar_topic]
 
         # Load output paths

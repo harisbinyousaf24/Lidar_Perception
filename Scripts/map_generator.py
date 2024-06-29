@@ -38,7 +38,7 @@ class MapGenerator:
         self.poses_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['tf_poses_file'])
 
         # Set output paths
-        self.module_dir = os.path.join(self.main_dir, setts['MapGenerator']['maps'])
+        self.module_dir = os.path.join(self.main_dir, setts['MapGenerator']['map'])
         os.makedirs(self.module_dir, exist_ok=True)
         self.map_file = os.path.join(self.main_dir, setts["MapGenerator"]['map_file'])
         if self.colored_map:
