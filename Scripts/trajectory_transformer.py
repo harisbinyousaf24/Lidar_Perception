@@ -27,7 +27,7 @@ class TrajectoryTransformer:
         self.manual_heading = params['TrajectoryTransformer']['manual_heading']
 
         # Load output paths
-        self.trajectory_transformed = setts['TrajectoryTransformer']['trajectory_transformed']
+        self.trajectory_transformed = setts['TrajectoryTransformer']['transformed_trajectory']
         self.org_plot_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['org_plot_file'])
         self.tf_plot_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['tf_plot_file'])
         self.tf_poses_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['tf_poses_file'])
@@ -56,17 +56,18 @@ class TrajectoryTransformer:
                                                                              self.translations,
                                                                              self.frames_index,
                                                                              self.offset)
-            self.r_matrix = TrajectoryTransformerUtils.rot_matrix(angle)
-            return self.r_matrix
+            r_matrix = TrajectoryTransformerUtils.rot_matrix(angle)
+            return r_matrix
         if self.use_heading_from == 'manual':
-            self.r_matrix = TrajectoryTransformerUtils.rot_matrix(self.manual_heading)
-            return self.r_matrix
+            r_matrix = TrajectoryTransformerUtils.rot_matrix(self.manual_heading)
+            return r_matrix
 
     def apply_transformation(self):
         transformed_poses = []
         transformed_translations = []
+        r_matrix = self.decide_rotation()
         for pose in self.poses:
-            rotated_pose = np.dot(self.r_matrix, pose)
+            rotated_pose = np.dot(r_matrix, pose)
             translation = pose[:3, 3]
             transformed_poses.append(rotated_pose)
             transformed_translations.append(translation)

@@ -24,7 +24,7 @@ class RunKissICP:
         self.deskew = params['LidarOdometry']['deskew']
 
         # Load input paths
-        self.preprocessed_frames = setts['Preprocessor']['frames_dir']
+        self.preprocessed_frames = os.path.join(self.main_dir, setts['Preprocessor']['frames_dir'])
 
         # Load output paths
         self.odometry = setts['LidarOdometry']['odometry']

@@ -39,6 +39,7 @@ class Extractor:
         os.makedirs(self.module_dir, exist_ok=True)
 
         self.frames_dir = os.path.join(self.main_dir, setts['Extractor']['frames_dir'])
+        os.makedirs(self.frames_dir, exist_ok=True)
         self.gnss_file = os.path.join(self.main_dir, setts['Extractor']['gnss_file'])
 
     def run(self):
