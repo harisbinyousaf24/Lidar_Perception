@@ -5,7 +5,7 @@ from extractor import Extractor
 from preprocessor import Preprocessor
 
 if __name__ == '__main__':
-    with open('Config/external_settings.yaml', 'r') as external_settings:
+    with open('../Config/external_settings.yaml', 'r') as external_settings:
         try:
             ext_setts = yaml.safe_load(external_settings)
         except yaml.YAMLError as exc:

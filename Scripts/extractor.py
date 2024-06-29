@@ -15,13 +15,13 @@ class Extractor:
         self.bag_file = bag_file
         self.main_dir = output_dir
 
-        with open('Params/params.yaml', 'r') as parameters:
+        with open('../Params/params.yaml', 'r') as parameters:
             try:
                 params = yaml.safe_load(parameters)
             except yaml.YAMLError as exc:
                 print(f"Error reading YAML file: {exc}")
 
-        with open('Config/settings.yaml', 'r') as settings:
+        with open('../Config/settings.yaml', 'r') as settings:
             try:
                 setts = yaml.safe_load(settings)
             except yaml.YAMLError as exc:
@@ -93,4 +93,3 @@ class Extractor:
 
             print(f"Lidar frames saved in directory: {self.frames_dir}")
             print(f"GPS data saved at: {self.gnss_file}")
-            
