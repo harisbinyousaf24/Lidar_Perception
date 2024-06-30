@@ -29,6 +29,8 @@ class MapGenerator:
         # Load parameters
         self.colored_map = params["MapGenerator"]["colored_map"]
         self.ground_map = params["MapGenerator"]["ground_map"]
+        self.apply_radial_filter = params["MapGenerator"]["apply_radial_filter"]
+        self.radial_threshold = params["MapGenerator"]["radial_threshold"]
         self.distance_threshold = params["MapGenerator"]["distance_threshold"]
         self.ransac_n = params["MapGenerator"]["ransac_n"]
         self.num_iters = params["MapGenerator"]["num_iters"]
@@ -60,8 +62,10 @@ class MapGenerator:
 
         if self.ground_map:
             ground_map = MapGenratorUtils.generate_ground_map(poses, self.frames_dir,
+                                                              self.radial_threshold,
                                                               self.distance_threshold,
-                                                              self.ransac_n, self.num_iters)
+                                                              self.ransac_n, self.num_iters,
+                                                              self.apply_radial_filter)
 
             ground_cloud = PyntCloud(pd.DataFrame(ground_map, columns=['x', 'y', 'z', 'intensity']))
             ground_cloud.to_file(self.ground_map_file)

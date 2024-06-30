@@ -29,6 +29,23 @@ class MapGenratorUtils:
         return transformed_points
 
     @staticmethod
+    def apply_radial_filter(obj, radius):
+        cloud = PreprocessorUtils.read_point_cloud(obj)
+        pcd = PlaygroundUtils.pyntcloud_to_open3d(obj)
+        cloud_df = cloud.points
+        distances = np.linalg.norm(np.asarray(pcd.points), axis=1)
+        mask = distances <= radius
+
+        inlier_points_df = cloud_df[mask]
+        outlier_points_df = cloud_df[~mask]
+
+        # Convert filtered DataFrames back to PyntClouds
+        inlier_cloud = PyntCloud(inlier_points_df)
+        outlier_cloud = PyntCloud(outlier_points_df)
+
+        return inlier_cloud, outlier_cloud
+
+    @staticmethod
     def plane_segmentation_mask(obj, dist_thresh, ransac_n, num_iters):
         cloud = PreprocessorUtils.read_point_cloud(obj)
         pcd = PlaygroundUtils.pyntcloud_to_open3d(obj)
@@ -75,7 +92,7 @@ class MapGenratorUtils:
         return tf_map
 
     @staticmethod
-    def generate_ground_map(tf_poses, lidar_frames_dir, dist_thresh, ransac_n, num_iters):
+    def generate_ground_map(tf_poses, lidar_frames_dir, radial_thresh, dist_thresh, ransac_n, num_iters, radial_mask=True):
         frames = sorted(os.path.join(lidar_frames_dir, file_name) for file_name in os.listdir(lidar_frames_dir) if
                         file_name.endswith('.ply'))
 
@@ -86,6 +103,8 @@ class MapGenratorUtils:
         for idx, file in tqdm(enumerate(frames), desc='Generating Ground Map: ', total=len(frames)):
             file_path = frames[idx]
             cloud = PyntCloud.from_file(file_path)
+            if radial_mask:
+                cloud, _ = MapGenratorUtils.apply_radial_filter(cloud, radial_thresh)
             ground_cloud, _ = MapGenratorUtils.plane_segmentation_mask(cloud, dist_thresh, ransac_n, num_iters)
             ground_points = ground_cloud.points.values
             tf_pose = tf_poses[idx]

@@ -35,6 +35,10 @@ MapGenerator:
   colored_map: True
   # Ground map parameters
   ground_map: True
+  # Radial filter
+  apply_radial_filter: True
+  radial_threshold: 25 # in meters
+  # Plane Segmentation filter
   distance_threshold: 0.1
   ransac_n: 10
   num_iters: 1000
