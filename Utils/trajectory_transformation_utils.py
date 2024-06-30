@@ -156,11 +156,3 @@ class TrajectoryTransformerUtils:
         )
         pio.write_html(fig, file=filename1)
 
-    @staticmethod
-    def plot_trajectories(gps, odom, output_file):
-        local_gps, offset = TrajectoryTransformerUtils.convert_global_to_local(gps)
-        global_odom = TrajectoryTransformerUtils.convert_local_to_global(odom, offset)
-
-        trajs = [('GPS', gps[:, :2]), ('Lidar', global_odom)]
-        TrajectoryTransformerUtils.mapbox_trajectories(trajs, output_file)
-

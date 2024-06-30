@@ -5,4 +5,5 @@ run_dataExtractor: True
 run_preprocessor: True
 run_kissICP: True
 run_trajectoryTransformer: True
-run_mapGenerator: True
+run_mapGenerator: False
+run_laneMarker: False

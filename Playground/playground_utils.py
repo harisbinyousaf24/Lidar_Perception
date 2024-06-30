@@ -17,9 +17,9 @@ class PlaygroundUtils:
         return open3d_cloud
 
     @staticmethod
-    def color_pcd(file, clr='r'):
-        cloud = PreprocessorUtils.read_point_cloud(file)
-        pcd = PlaygroundUtils.pyntcloud_to_open3d(cloud)
+    def color_pcd(pcd, clr='r'):
+        # cloud = PreprocessorUtils.read_point_cloud(file)
+        # pcd = PlaygroundUtils.pyntcloud_to_open3d(cloud)
 
         if clr == 'r':
             color = [1, 0, 0]

@@ -30,6 +30,8 @@ TrajectoryTransformer:
   use_heading_from: 'gps'
   # Set manual heading in degrees if above parameter is 'manual'
   manual_heading: 5
+  manual_translate: True
+  latlon_offset: [52.478416, 13.337876]
 
 MapGenerator:
   colored_map: True
@@ -42,3 +44,18 @@ MapGenerator:
   distance_threshold: 0.1
   ransac_n: 10
   num_iters: 1000
+
+LaneMarker:
+  plot_histogram: True
+  # Intensity Filter parameters
+  num_std_devs: 5
+  use_manual_param: False
+  intensity_filter: [10, 40]
+  # DBSCAN Clustering parameters
+  eps: 0.5 # in meters
+  num_points: 20
+  print_progress: False
+  # Alpha shapes/ Hull parameters
+  # Greater alpha value -> Tight boundary
+  # Lower alpha value -> Loose Boundary
+  alpha: 5

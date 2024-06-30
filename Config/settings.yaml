@@ -22,3 +22,8 @@ MapGenerator:
   map_file: 'maps/map.ply'
   ground_map_file: 'maps/ground_map.ply'
   colored_map_file: "maps/colored_map.ply"
+
+LaneMarker:
+  lanemarker: 'lane_markings'
+  plot_path: 'lane_markings/intensity_histogram.html'
+  geojson_path: 'lane_markings/lane_markings_geojson.json'

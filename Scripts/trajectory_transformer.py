@@ -2,6 +2,7 @@ from Utils.trajectory_transformation_utils import TrajectoryTransformerUtils
 import yaml
 import os
 import numpy as np
+import utm
 
 
 class TrajectoryTransformer:
@@ -25,6 +26,7 @@ class TrajectoryTransformer:
         self.offset = params['TrajectoryTransformer']['offset']
         self.use_heading_from = params['TrajectoryTransformer']['use_heading_from']
         self.manual_heading = params['TrajectoryTransformer']['manual_heading']
+        self.manual_translate = params['TrajectoryTransformer']['manual_translate']
 
         # Load output paths
         self.trajectory_transformed = setts['TrajectoryTransformer']['transformed_trajectory']
@@ -43,7 +45,12 @@ class TrajectoryTransformer:
                 self.poses_file = os.path.join(self.latest_dir, file)
 
         self.gps_data = TrajectoryTransformerUtils.read_gps(self.gnss_file)
-        self.local_gps, self.offset_list = TrajectoryTransformerUtils.convert_global_to_local(self.gps_data)
+        self.local_gps, self.conversion_offset = TrajectoryTransformerUtils.convert_global_to_local(self.gps_data)
+        if self.manual_translate:
+            self.latlon_offset = params['TrajectoryTransformer']['latlon_offset']
+            utm_x, utm_y, _, _ = utm.from_latlon(self.latlon_offset[0], self.latlon_offset[1])
+            new_array = np.array([utm_x, utm_y])
+            self.conversion_offset[0] = new_array
         self.poses, self.translations = TrajectoryTransformerUtils.load_states(self.poses_file)
 
     def decide_rotation(self):
@@ -78,9 +85,16 @@ class TrajectoryTransformer:
         tf_poses, tf_translations = self.apply_transformation()
         np.save(self.tf_poses_file, tf_poses)
         print(f"Transformed poses saved at: {self.tf_poses_file}")
-        TrajectoryTransformerUtils.plot_trajectories(self.gps_data, self.translations, self.org_plot_file)
+        # Plotting Raw plot
+        raw_global_odom = TrajectoryTransformerUtils.convert_local_to_global(self.translations, self.conversion_offset)
+        raw = [('GPS', self.gps_data[:, :2]), ('Lidar', raw_global_odom)]
+        TrajectoryTransformerUtils.mapbox_trajectories(raw, self.org_plot_file)
         print(f"Raw trajectories plot saved at: {self.org_plot_file}")
-        TrajectoryTransformerUtils.plot_trajectories(self.gps_data, tf_translations, self.tf_plot_file)
+        # Plotting Transformed plot
+        tf_global_odom = TrajectoryTransformerUtils.convert_local_to_global(tf_translations, self.conversion_offset)
+        tf = [('GPS', self.gps_data[:, :2]), ('Lidar', tf_global_odom)]
+        TrajectoryTransformerUtils.mapbox_trajectories(tf, self.tf_plot_file)
         print(f"Transformed trajectories plot saved at: {self.tf_plot_file}")
+        return self.conversion_offset
 
 

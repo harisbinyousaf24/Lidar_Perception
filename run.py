@@ -44,6 +44,7 @@ if __name__ == '__main__':
     run_kissICP = ext_setts['run_kissICP']
     run_trajectoryTransformer = ext_setts['run_trajectoryTransformer']
     run_mapGenerator = ext_setts['run_mapGenerator']
+    run_laneMarker = ext_setts['run_laneMarker']
 
     COLOR = "\033[95m"
     RESET = "\033[0m"
@@ -57,7 +58,7 @@ if __name__ == '__main__':
         bag_file, output_dir, logging,
         run_dataExtractor, run_preprocessor,
         run_kissICP, run_trajectoryTransformer,
-        run_mapGenerator
+        run_mapGenerator, run_laneMarker
     )
 
     elapsed_time = time.time() - start_time

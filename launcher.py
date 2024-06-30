@@ -5,13 +5,14 @@ from Scripts.lidar_odometry import RunKissICP
 from Scripts.extractor import Extractor
 from Scripts.preprocessor import Preprocessor
 from Scripts.map_generator import MapGenerator
+from Scripts.lane_marker import LaneMarker
 
 
 class LaunchSequence:
     def __init__(self, bag_file, output_dir, logger,
                  run_dataExtractor, run_preprocessor,
                  run_kissICP, run_trajectoryTransformer,
-                 run_mapGenerator):
+                 run_mapGenerator, run_laneMarker):
 
         start_time = time.time()
         logger.info('Estimating Drive Distance...')
@@ -46,7 +47,7 @@ class LaunchSequence:
             start_time = time.time()
             logger.info('Running TrajectoryTransformer module...')
             trajectoryTransformer = TrajectoryTransformer(output_dir)
-            trajectoryTransformer.run()
+            self.latlon_offset = trajectoryTransformer.run()
             elapsed_time = time.time() - start_time
             logger.info(f'TrajectoryTransformer module took {elapsed_time:.2f} seconds.\n')
         if run_mapGenerator:
@@ -56,4 +57,10 @@ class LaunchSequence:
             mapGen.run()
             elapsed_time = time.time() - start_time
             logger.info(f'MapGenerator module took {elapsed_time:.2f} seconds.\n')
-
+        if run_laneMarker:
+            start_time = time.time()
+            logger.info('Running LaneMarker module...')
+            laneMark = LaneMarker(output_dir, self.latlon_offset)
+            laneMark.run()
+            elapsed_time = time.time() - start_time
+            logger.info(f'LaneMarker module took {elapsed_time:.2f} seconds.\n')
