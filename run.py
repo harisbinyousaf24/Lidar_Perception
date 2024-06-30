@@ -1,14 +1,9 @@
-import os
+from launcher import LaunchSequence
 import coloredlogs
 import yaml
-import logging
+import os
 import time
-from Scripts.distance_computer import DistanceComputer
-from Scripts.trajectory_transformer import TrajectoryTransformer
-from Scripts.lidar_odometry import RunKissICP
-from Scripts.extractor import Extractor
-from Scripts.preprocessor import Preprocessor
-from Scripts.map_generator import MapGenerator
+import logging
 
 
 def setup_logging():
@@ -50,46 +45,22 @@ if __name__ == '__main__':
     run_trajectoryTransformer = ext_setts['run_trajectoryTransformer']
     run_mapGenerator = ext_setts['run_mapGenerator']
 
-    start_time = time.time()
-    logging.info('Estimating Drive Distance...')
-    dstComputer = DistanceComputer(bag_file)
-    distance = dstComputer.compute_distance()
-    print(f"\033[93mTotal GPS estimated drive distance is {distance} meters.\033[0m")
-    elapsed_time = time.time() - start_time
-    logging.info(f'DistanceComputer module took {elapsed_time:.2f} seconds.\n')
+    COLOR = "\033[95m"
+    RESET = "\033[0m"
 
-    if run_dataExtractor:
-        start_time = time.time()
-        logging.info('Running Extractor module...')
-        dataExtractor = Extractor(bag_file, output_dir)
-        dataExtractor.run()
-        elapsed_time = time.time() - start_time
-        logging.info(f'Extractor module took {elapsed_time:.2f} seconds.\n')
-    if run_preprocessor:
-        start_time = time.time()
-        logging.info('Running Preprocessor module...')
-        preProcessor = Preprocessor(output_dir, distance)
-        preProcessor.run()
-        elapsed_time = time.time() - start_time
-        logging.info(f'Preprocessor module took {elapsed_time:.2f} seconds.\n')
-    if run_kissICP:
-        start_time = time.time()
-        logging.info('Running RunKissICP module...')
-        kissicp = RunKissICP(output_dir, run_preprocessor)
-        kissicp.run()
-        elapsed_time = time.time() - start_time
-        logging.info(f'RunKissICP module took {elapsed_time:.2f} seconds.\n')
-    if run_trajectoryTransformer:
-        start_time = time.time()
-        logging.info('Running TrajectoryTransformer module...')
-        trajectoryTransformer = TrajectoryTransformer(output_dir)
-        trajectoryTransformer.run()
-        elapsed_time = time.time() - start_time
-        logging.info(f'TrajectoryTransformer module took {elapsed_time:.2f} seconds.\n')
-    if run_mapGenerator:
-        start_time = time.time()
-        logging.info('Running MapGenerator module...')
-        mapGen = MapGenerator(output_dir, run_preprocessor)
-        mapGen.run()
-        elapsed_time = time.time() - start_time
-        logging.info(f'MapGenerator module took {elapsed_time:.2f} seconds.\n')
+    start_time = time.time()
+    print(f"{COLOR}--------------------------------------------------------------------{RESET}")
+    logging.info('INITIATING LAUNCH SEQUENCE...')
+    print(f"{COLOR}--------------------------------------------------------------------{RESET}\n")
+
+    launch = LaunchSequence(
+        bag_file, output_dir, logging,
+        run_dataExtractor, run_preprocessor,
+        run_kissICP, run_trajectoryTransformer,
+        run_mapGenerator
+    )
+
+    elapsed_time = time.time() - start_time
+    print(f"{COLOR}--------------------------------------------------------------------{RESET}")
+    logging.info(f'TOTAL TIME TOOK {elapsed_time:.2f} SECONDS.')
+    print(f"{COLOR}--------------------------------------------------------------------{RESET}")
