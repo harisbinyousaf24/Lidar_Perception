@@ -24,14 +24,14 @@ LidarOdometry:
   deskew: True
 
 TrajectoryTransformer:
-  frames_index: -1
-  offset: 0
+  frame_index: -1
+  rot_offset: 0
   # Use heading from 'gps' or 'manual'
   use_heading_from: 'gps'
   # Set manual heading in degrees if above parameter is 'manual'
   manual_heading: 5
-  manual_translate: True
-  latlon_offset: [52.478416, 13.337876]
+  use_manual_georef: False
+  georef_start: [52.478416, 13.337876]
 
 MapGenerator:
   colored_map: True

@@ -186,18 +186,15 @@ class LaneMarkerUtils:
 
     @staticmethod
     def convert_hulls_to_latlon(hulls_list, offset):
-        lat, lon = offset
-        utm_x, utm_y, zn, zl = utm.from_latlon(lat, lon)
-
         latlon_hulls = []
-
+        offset_arr, zone_num, zone_letter = offset
         for hull in hulls_list:
             latlon = []
             for point in hull:
                 x, y = point
-                utm_local_x = x + utm_x
-                utm_local_y = y + utm_y
-                lat, lon = utm.to_latlon(utm_local_x, utm_local_y, zn, zl)
+                utm_local_x = x + offset_arr[0]
+                utm_local_y = y + offset_arr[1]
+                lat, lon = utm.to_latlon(utm_local_x, utm_local_y, zone_num, zone_letter)
                 latlon.append([lon, lat])
                 latlon_matrix = np.array(latlon)
             latlon_hulls.append(latlon_matrix)

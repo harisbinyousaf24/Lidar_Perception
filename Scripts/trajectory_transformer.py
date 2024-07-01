@@ -2,7 +2,6 @@ from Utils.trajectory_transformation_utils import TrajectoryTransformerUtils
 import yaml
 import os
 import numpy as np
-import utm
 
 
 class TrajectoryTransformer:
@@ -22,11 +21,12 @@ class TrajectoryTransformer:
                 print(f"Error reading YAML file: {exc}")
 
         # Load parameters
-        self.frames_index = params['TrajectoryTransformer']['frames_index']
-        self.offset = params['TrajectoryTransformer']['offset']
+        self.frame_index = params['TrajectoryTransformer']['frame_index']
+        self.rot_offset = params['TrajectoryTransformer']['rot_offset']
         self.use_heading_from = params['TrajectoryTransformer']['use_heading_from']
         self.manual_heading = params['TrajectoryTransformer']['manual_heading']
-        self.manual_translate = params['TrajectoryTransformer']['manual_translate']
+        self.use_manual_georef = params['TrajectoryTransformer']['use_manual_georef']
+        self.georef_start = params['TrajectoryTransformer']['georef_start']
 
         # Load output paths
         self.trajectory_transformed = setts['TrajectoryTransformer']['transformed_trajectory']
@@ -44,57 +44,68 @@ class TrajectoryTransformer:
             if file.endswith('.npy'):
                 self.poses_file = os.path.join(self.latest_dir, file)
 
-        self.gps_data = TrajectoryTransformerUtils.read_gps(self.gnss_file)
-        self.local_gps, self.conversion_offset = TrajectoryTransformerUtils.convert_global_to_local(self.gps_data)
-        if self.manual_translate:
-            self.latlon_offset = params['TrajectoryTransformer']['latlon_offset']
-            utm_x, utm_y, _, _ = utm.from_latlon(self.latlon_offset[0], self.latlon_offset[1])
-            new_array = np.array([utm_x, utm_y])
-            self.conversion_offset[0] = new_array
-        self.poses, self.translations = TrajectoryTransformerUtils.load_states(self.poses_file)
+        self.GPS_global = TrajectoryTransformerUtils.read_gps(self.gnss_file)
+        self.GPS_local = TrajectoryTransformerUtils.convert_global_to_local(self.GPS_global)
+        self.ODOM_poses, self.ODOM_translations = TrajectoryTransformerUtils.load_states(self.poses_file)
+
+    def decide_georeferencing(self):
+        if self.use_manual_georef:
+            offset = TrajectoryTransformerUtils.compute_offset(self.georef_start)
+            return offset
+        else:
+            latlon_gps = self.GPS_global[:, :2]
+            offset = TrajectoryTransformerUtils.compute_offset(latlon_gps[0])
+            return offset
 
     def decide_rotation(self):
         if self.use_heading_from == 'gps':
-            angle = TrajectoryTransformerUtils.compute_rotation_based_on_gps(self.local_gps,
-                                                                             self.translations,
-                                                                             self.frames_index,
-                                                                             self.offset)
-            print(f"Using heading from GPS: {angle} degrees")
-            r_matrix = TrajectoryTransformerUtils.rot_matrix(angle)
-            return r_matrix
-        if self.use_heading_from == 'manual':
-            print(f"Using heading manually {self.manual_heading} degrees")
-            r_matrix = TrajectoryTransformerUtils.rot_matrix(self.manual_heading)
-            return r_matrix
+            angle = TrajectoryTransformerUtils.compute_angle(self.GPS_local, self.ODOM_translations, self.frame_index)
+            net_angle = angle + self.rot_offset
+            R4 = TrajectoryTransformerUtils.rot_matrix(net_angle)
+            return R4
+        elif self.use_heading_from == 'manual':
+            angle = self.manual_heading
+            net_angle = angle + self.rot_offset
+            R4 = TrajectoryTransformerUtils.rot_matrix(net_angle)
+            return R4
 
     def apply_transformation(self):
-        transformed_poses = []
-        transformed_translations = []
-        r_matrix = self.decide_rotation()
-        for pose in self.poses:
-            rotated_pose = np.dot(r_matrix, pose)
+        TF_POSES = []
+        TF_translations = []
+        CONV_offset = self.decide_georeferencing()
+        R4 = self.decide_rotation()
+        POSES_copy = np.copy(self.ODOM_poses)
+        # Applying Rotation
+        for idx in range(len(POSES_copy)):
+            pose = POSES_copy[idx]
+            rotated_pose = np.dot(R4, pose)
             translation = rotated_pose[:3, 3]
-            transformed_poses.append(rotated_pose)
-            transformed_translations.append(translation)
+            TF_POSES.append(rotated_pose)
+            TF_translations.append(translation)
 
-        tf_poses = np.array(transformed_poses)
-        tf_translations = np.array(transformed_translations)
-        return tf_poses, tf_translations
+        TF_POSES = np.array(TF_POSES)
+        TF_translations = np.array(TF_translations)
+
+        # Applying Translation
+        TF_global = TrajectoryTransformerUtils.convert_local_to_global(TF_translations, CONV_offset)
+        ODOM_global = TrajectoryTransformerUtils.convert_local_to_global(self.ODOM_translations, CONV_offset)
+
+        set1 = [("GPS", self.GPS_global[:, :2]), ("Lidar", ODOM_global)]
+        set2 = [("GPS", self.GPS_global[:, :2]), ("Lidar", TF_global)]
+
+        return TF_POSES, set1, set2, CONV_offset
+
+    def write_results(self, TF_POSES, set1, set2):
+        np.save(self.tf_poses_file, TF_POSES)
+        print(f"Poses saved at {self.tf_poses_file}")
+        TrajectoryTransformerUtils.plot(self.org_plot_file, set1)
+        print(f"Raw plots saved at {self.org_plot_file}")
+        TrajectoryTransformerUtils.plot(self.tf_plot_file, set2)
+        print(f"Transformed plots saved at {self.tf_plot_file}")
 
     def run(self):
-        tf_poses, tf_translations = self.apply_transformation()
-        np.save(self.tf_poses_file, tf_poses)
-        print(f"Transformed poses saved at: {self.tf_poses_file}")
-        # Plotting Raw plot
-        raw_global_odom = TrajectoryTransformerUtils.convert_local_to_global(self.translations, self.conversion_offset)
-        raw = [('GPS', self.gps_data[:, :2]), ('Lidar', raw_global_odom)]
-        TrajectoryTransformerUtils.mapbox_trajectories(raw, self.org_plot_file)
-        print(f"Raw trajectories plot saved at: {self.org_plot_file}")
-        # Plotting Transformed plot
-        tf_global_odom = TrajectoryTransformerUtils.convert_local_to_global(tf_translations, self.conversion_offset)
-        tf = [('GPS', self.gps_data[:, :2]), ('Lidar', tf_global_odom)]
-        TrajectoryTransformerUtils.mapbox_trajectories(tf, self.tf_plot_file)
-        print(f"Transformed trajectories plot saved at: {self.tf_plot_file}")
-        return self.conversion_offset
+        TF_POSES, set1, set2, CONV_offset = self.apply_transformation()
+        self.write_results(TF_POSES, set1, set2)
+        return CONV_offset
 
 

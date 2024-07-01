@@ -36,7 +36,7 @@ class LaneMarker:
         self.map_file_path = os.path.join(self.main_dir, setts['MapGenerator']['ground_map_file'])
 
         # Setting up output paths
-        self.module_dir = os.path.join(self.main_dir, setts['LaneMarker']['lane_markings'])
+        self.module_dir = os.path.join(self.main_dir, setts['LaneMarker']['lanemarker'])
         os.makedirs(self.module_dir, exist_ok=True)
         self.plot_file = os.path.join(self.main_dir, setts['LaneMarker']['plot_path'])
         self.geojson_file = os.path.join(self.main_dir, setts['LaneMarker']['geojson_path'])

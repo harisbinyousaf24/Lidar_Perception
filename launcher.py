@@ -22,6 +22,8 @@ class LaunchSequence:
         elapsed_time = time.time() - start_time
         logger.info(f'DistanceComputer module took {elapsed_time:.2f} seconds.\n')
 
+        self.latlon_offset = []
+
         if run_dataExtractor:
             start_time = time.time()
             logger.info('Running Extractor module...')
