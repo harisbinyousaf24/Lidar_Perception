@@ -187,7 +187,7 @@ class LaneMarkerUtils:
     @staticmethod
     def convert_hulls_to_latlon(hulls_list, offset):
         latlon_hulls = []
-        offset_arr, zone_num, zone_letter = offset
+        offset_arr, zone_num, zone_letter = offset['utm_coords'], offset['zone_number'], offset['zone_letter']
         for hull in hulls_list:
             latlon = []
             for point in hull:

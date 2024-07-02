@@ -2,6 +2,7 @@ from Utils.trajectory_transformation_utils import TrajectoryTransformerUtils
 import yaml
 import os
 import numpy as np
+import json
 
 
 class TrajectoryTransformer:
@@ -33,6 +34,7 @@ class TrajectoryTransformer:
         self.org_plot_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['org_plot_file'])
         self.tf_plot_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['tf_plot_file'])
         self.tf_poses_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['tf_poses_file'])
+        self.offset_file = os.path.join(self.main_dir, setts['TrajectoryTransformer']['offset_file'])
 
         self.module_dir = os.path.join(self.main_dir, self.trajectory_transformed)
         os.makedirs(self.module_dir, exist_ok=True)
@@ -95,17 +97,24 @@ class TrajectoryTransformer:
 
         return TF_POSES, set1, set2, CONV_offset
 
-    def write_results(self, TF_POSES, set1, set2):
+    def write_results(self, TF_POSES, set1, set2, conv_offset):
         np.save(self.tf_poses_file, TF_POSES)
         print(f"Poses saved at {self.tf_poses_file}")
         TrajectoryTransformerUtils.plot(self.org_plot_file, set1)
         print(f"Raw plots saved at {self.org_plot_file}")
         TrajectoryTransformerUtils.plot(self.tf_plot_file, set2)
         print(f"Transformed plots saved at {self.tf_plot_file}")
+        json_struct = {
+            'utm_coords': conv_offset[0].tolist(),
+            'zone_number': conv_offset[1],
+            'zone_letter': conv_offset[2]
+        }
+        with open(self.offset_file, 'w') as file:
+            json.dump(json_struct, file, indent=4)
+        print(f"Offset file saved at: {self.offset_file}")
 
     def run(self):
         TF_POSES, set1, set2, CONV_offset = self.apply_transformation()
-        self.write_results(TF_POSES, set1, set2)
-        return CONV_offset
+        self.write_results(TF_POSES, set1, set2, CONV_offset)
 
 

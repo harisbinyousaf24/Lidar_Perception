@@ -2,12 +2,12 @@ import yaml
 from Utils.lane_marker_utils import LaneMarkerUtils
 import os
 from Utils.preprocessor_utils import PreprocessorUtils
+import json
 
 
 class LaneMarker:
-    def __init__(self, output_dir, offset):
+    def __init__(self, output_dir):
         self.main_dir = output_dir
-        self.offset = offset
 
         with open('Params/params.yaml', 'r') as parameters:
             try:
@@ -34,6 +34,9 @@ class LaneMarker:
 
         # Setting up input paths
         self.map_file_path = os.path.join(self.main_dir, setts['MapGenerator']['ground_map_file'])
+        self.offset_path = os.path.join(self.main_dir, setts['TrajectoryTransformer']['offset_file'])
+        with open(self.offset_path, 'r') as file:
+            self.offset = json.load(file)
 
         # Setting up output paths
         self.module_dir = os.path.join(self.main_dir, setts['LaneMarker']['lanemarker'])

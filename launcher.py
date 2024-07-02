@@ -22,8 +22,6 @@ class LaunchSequence:
         elapsed_time = time.time() - start_time
         logger.info(f'DistanceComputer module took {elapsed_time:.2f} seconds.\n')
 
-        self.latlon_offset = []
-
         if run_dataExtractor:
             start_time = time.time()
             logger.info('Running Extractor module...')
@@ -49,7 +47,7 @@ class LaunchSequence:
             start_time = time.time()
             logger.info('Running TrajectoryTransformer module...')
             trajectoryTransformer = TrajectoryTransformer(output_dir)
-            self.latlon_offset = trajectoryTransformer.run()
+            trajectoryTransformer.run()
             elapsed_time = time.time() - start_time
             logger.info(f'TrajectoryTransformer module took {elapsed_time:.2f} seconds.\n')
         if run_mapGenerator:
@@ -62,7 +60,7 @@ class LaunchSequence:
         if run_laneMarker:
             start_time = time.time()
             logger.info('Running LaneMarker module...')
-            laneMark = LaneMarker(output_dir, self.latlon_offset)
+            laneMark = LaneMarker(output_dir)
             laneMark.run()
             elapsed_time = time.time() - start_time
             logger.info(f'LaneMarker module took {elapsed_time:.2f} seconds.\n')
