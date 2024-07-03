@@ -42,6 +42,7 @@ class LaneMarker:
         self.module_dir = os.path.join(self.main_dir, setts['LaneMarker']['lanemarker'])
         os.makedirs(self.module_dir, exist_ok=True)
         self.plot_file = os.path.join(self.main_dir, setts['LaneMarker']['plot_path'])
+        self.markings_file = os.path.join(self.main_dir, setts['LaneMarker']['clustered_markings'])
         self.geojson_file = os.path.join(self.main_dir, setts['LaneMarker']['geojson_path'])
 
     def run(self):
@@ -61,13 +62,12 @@ class LaneMarker:
                                                                      self.intensity_filter)
         print("Intensity based filtering completed")
         print("Applying DBSCAN clustering...")
-        clusters_list, _, _ = LaneMarkerUtils.apply_clustering(inlier_intensity,
-                                                               self.eps, self.num_points,
-                                                               self.print_progress)
+        clusters_list, clusters_cloud, _ = LaneMarkerUtils.apply_clustering(inlier_intensity,
+                                                                            self.eps, self.num_points,
+                                                                            self.print_progress)
+        clusters_cloud.to_file(self.markings_file)
+        print(f"Clustered points saved at: {self.markings_file}")
         hulls = LaneMarkerUtils.compute_hulls(clusters_list, self.alpha)
         print("Converting hulls to latlon")
         latlon_hulls = LaneMarkerUtils.convert_hulls_to_latlon(hulls, self.offset)
         LaneMarkerUtils.extract_geojson(latlon_hulls, self.geojson_file)
-
-
-
