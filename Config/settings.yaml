@@ -16,6 +16,7 @@ TrajectoryTransformer:
   org_plot_file: 'trajectory_transformed/lidar_gps_raw.html'
   tf_plot_file: 'trajectory_transformed/lidar_gps_tf.html'
   tf_poses_file: 'trajectory_transformed/tf_poses.npy'
+  offset_file: 'trajectory_transformed/conversion_offset.json'
 
 MapGenerator:
   map: 'maps'
